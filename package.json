@@ -1,11 +1,12 @@
 {
   "dependencies": {
+    "exceljs": "^4.3.0",
     "puppeteer": "^21.3.8"
   },
   "name": "web-scrape",
   "version": "1.0.0",
-  "type": "module",
   "main": "runScrape.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

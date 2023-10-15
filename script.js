@@ -1,11 +1,15 @@
 import puppeteer from "puppeteer";
-import * as fs from "fs";
-import { schema, createSchema } from "./schema.js";
+import { createSchema } from "./helpers/createSchema.js";
+import { schema } from "./schema/schema.js";
+import { createJSON } from "./helpers/createJSON.js";
+import { generateXLSX } from "./helpers/generateXLSX.js";
+import { isNumber } from "./helpers/isNumber.js";
 
-const run = async (url) => {
+const run = async (url, jsonName = "output", rows = 2, xlsxName = "output") => {
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
 
+  // scrap the web
   try {
     await page.goto(url); // visit page
 
@@ -24,7 +28,7 @@ const run = async (url) => {
 
       // check if the input element type is checkbox/radio
       if (type === "checkbox" || type === "radio") {
-        // Get all label elements with attribute for == id of the input element
+        // If it is, then get all label elements with attribute for == id of the input element
         const label = await page.evaluate(
           (id) => document.querySelector(`label[for="${id}"]`).textContent,
           id
@@ -40,11 +44,12 @@ const run = async (url) => {
         }
       } else {
         // check data type
-        const elementValue = await page.evaluate(
+        const inputElementValue = await page.evaluate(
           (el) => el.value,
           inputElement
         );
-        const dataType = isNaN(parseFloat(elementValue)) ? "string" : "number";
+
+        const dataType = isNumber(inputElementValue) ? "number" : "string";
 
         schema.components.schemas[name] = { type: dataType }; // else, create data type only to the key
       }
@@ -65,15 +70,16 @@ const run = async (url) => {
       schema.components.schemas[name] = selectSchema; // Add select element type to the schema
     }
 
-    console.log(schema);
     // create the json
-    fs.writeFile("scraped.json", JSON.stringify(schema), (err) => {
-      if (err) throw err;
-      console.log("file saved");
-    });
+    createJSON(jsonName, schema);
 
     browser.close();
   } catch (error) {
     console.error(error);
+    browser.close();
+    return;
   }
+
+  // Generate XLSX
+  generateXLSX(schema, rows, xlsxName);
 };
