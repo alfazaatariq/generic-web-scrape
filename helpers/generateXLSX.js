@@ -3,6 +3,15 @@ import { numberToExcelColumn } from "./numberToExcelColumn.js";
 
 const { Workbook } = pkg;
 
+/**
+ * Generates an XLSX file with data and headers.
+ *
+ * @param {object} data - The data object containing components schemas.
+ * @param {number} rows - The number of rows to generate.
+ * @param {string} [outputFile="testing.xlsx"] - The name of the output file.
+ * @return {void} No return value.
+ */
+
 export const generateXLSX = (data, rows, outputFile = "testing.xlsx") => {
   const workbook = new Workbook();
   const worksheet = workbook.addWorksheet("Data");

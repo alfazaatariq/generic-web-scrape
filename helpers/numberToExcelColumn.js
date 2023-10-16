@@ -1,3 +1,10 @@
+/**
+ * Converts a number to an Excel column string.
+ *
+ * @param {number} number - The number to convert.
+ * @return {string} The Excel column string.
+ */
+
 export const numberToExcelColumn = (number) => {
   let column = "";
   while (number > 0) {

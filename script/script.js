@@ -1,11 +1,25 @@
+import { configDotenv } from "dotenv";
 import puppeteer from "puppeteer";
-import { createSchema } from "./helpers/createSchema.js";
-import { schema } from "./schema/schema.js";
-import { createJSON } from "./helpers/createJSON.js";
-import { generateXLSX } from "./helpers/generateXLSX.js";
-import { isNumber } from "./helpers/isNumber.js";
+import { createSchema } from "../helpers/createSchema.js";
+import { schema } from "../schema/schema.js";
+import { createJSON } from "../helpers/createJSON.js";
+import { generateXLSX } from "../helpers/generateXLSX.js";
+import { isNumber } from "../helpers/isNumber.js";
 
-const run = async (url, jsonName = "output", rows = 2, xlsxName = "output") => {
+configDotenv();
+
+/**
+ * Scrapes a web page for input and select elements, creates a JSON object
+ * based on the scraped data, and generates an XLSX file.
+ *
+ * @param {string} url - The URL of the web page to scrape.
+ * @param {string} [jsonName="output"] - The name of the JSON file to create (Default = "output").
+ * @param {string} [xlsxName="output"] - The name of the XLSX file to create (Default = "output").
+ * @param {number} [rows=2] - The number of rows to generate in the XLSX file (Default = 2).
+ * @return {undefined} This function does not return a value.
+ */
+
+const run = async (url, jsonName = "output", xlsxName = "output", rows = 2) => {
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
 
@@ -83,3 +97,5 @@ const run = async (url, jsonName = "output", rows = 2, xlsxName = "output") => {
   // Generate XLSX
   generateXLSX(schema, rows, xlsxName);
 };
+
+export default run;
